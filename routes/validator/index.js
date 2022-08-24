@@ -8,20 +8,25 @@ const validation = (schemaName) => {
     const schema = require(`./schemas/${schemaName}`); // schema's connection
     const validate = ajv.compile(schema);
     const valid = validate(req.body);
-    console.log('Body>>>', req.body);
-    console.log('object validation>>>', valid);
+    
     if (!valid) {
       const errors = validate.errors.reduce((acc, el) => {
-        acc[el.instancePath.slice(1)] = el.message;
+        if (!el.instancePath && el.keyword === 'required' && el.params?.missingProperty) {
+          acc[el.params.missingProperty] = el.message;
+        } else {
+          acc[el.instancePath.slice(1)] = el.message;
+        }
+
         return acc;
       }, {});
-      console.log('errors>>>>', errors);
+
       return res.status(400).json({
         data: {
           errors
         }
-      })
-    } 
+      });
+    }
+
     next();
   };
 }

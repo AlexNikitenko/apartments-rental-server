@@ -1,11 +1,9 @@
 const Apartments = require('../model/Apartments');
 
-//Show Index Route
 const showIndex = (req, res) => {
   res.send('Home Page');
 };
 
-//Get the list of all apartments
 const getAllApartments = async (req, res) => {
   try {
     const {
@@ -13,22 +11,18 @@ const getAllApartments = async (req, res) => {
       rooms
     } = req.query;
     const apartmentsArr = [];
-    if (!price && !rooms) {
-      apartmentsArr.push(await Apartments.find({}));
-    } else {
-      if (price === 'asc') {
-        const resultArr = await Apartments.getApartmentsByRoomsNumber(rooms);
-        resultArr.sort((a, b) => a.price - b.price);
-        apartmentsArr.push(resultArr);
-      }
-      if (price === 'desc') {
-        const resultArr = await Apartments.getApartmentsByRoomsNumber(rooms);
-        resultArr.sort((a, b) => b.price - a.price);
-        apartmentsArr.push(resultArr);
-      }
+    const apartments = Number.isInteger(+rooms) ?
+      await Apartments.find({ rooms }) :
+      await Apartments.find({});
+
+    if (price === 'asc') {
+      apartments.sort((a, b) => a.price - b.price);
+    } else if (price === 'desc') {
+      apartments.sort((a, b) => b.price - a.price);
     }
+
     res.status(200).json({
-      data: apartmentsArr
+      data: apartments
     });
   } catch (err) {
     res.status(500).json({
@@ -37,11 +31,31 @@ const getAllApartments = async (req, res) => {
   }
 };
 
-//Submit the Apartment to the database
-
-const submitApartment = async (req, res) => {
+const getApartmentById = async (req, res) => {
+  const {id} = req.params;
   try {
-    const newApartment = new Apartments(req.body);
+    const apartment = await Apartments.findById(id);
+
+    if (!apartment) {
+      return res.status(404).json({
+        message: 'Not Found'
+      });
+    }
+
+    res.status(200).json({
+      data: apartment
+    })
+  } catch (err) {
+    res.status(500).json({
+      message: 'Server Error'
+    });
+  }
+};
+
+const addApartment = async (req, res) => {
+  try {
+    const { rooms, name, price, description } = req.body;
+    const newApartment = new Apartments({ rooms, name, price, description });
     const apartment = await newApartment.save();
     res.status(200).json({
       data: apartment
@@ -53,48 +67,40 @@ const submitApartment = async (req, res) => {
   }
 };
 
-//Get Appartment by ID
-const getApartmentById = async (req, res) => {
-  const {id} = req.params;
-  try {
-    const apartment = await Apartments.findById(id).exec();
-    res.status(200).json({
-      data: apartment
-    })
-  } catch(err) {
-    res.status(500).json({
-      message: 'Server Error'
-    });
-  }
-};
-
-//Delete Appartment by ID
-const deleteApartmentById = async (req, res) => {
-  const {id} = req.params;
-  try {
-    await Apartments.findByIdAndDelete(id);
-    res.status(200).json({
-      data: `The apartment with ID#${id} has been deleted`
-    })
-  } catch(err) {
-    res.status(500).json({
-      message: 'Server Error'
-    });
-  }
-};
-
-//Edit Appartment by ID
 const editApartmentById = async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   try {
-    const {rooms, name, price, description} = req.body;
-    console.log('updatedObj', rooms, name, price, description);
-    const updatedApartment = await Apartments.findByIdAndUpdate(id, { $set: { rooms, name, price, description } });
+    const { rooms, name, price, description } = req.body;
+    const updatedApartment = await Apartments.findByIdAndUpdate(id, {
+      $set: { rooms, name, price, description }
+    }, {
+      new: true
+    });
     res.status(200).json({
       data: updatedApartment
-    })
-  } catch(err) {
-    console.log(err);
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: 'Server Error'
+    });
+  }
+};
+
+const deleteApartmentById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const apartment = await Apartments.findByIdAndDelete(id);
+
+    if (!apartment) {
+      return res.status(404).json({
+        message: 'Not Found'
+      });
+    }
+
+    res.status(200).json({
+      data: `The apartment with ID#${id} has been deleted`
+    });
+  } catch (err) {
     res.status(500).json({
       message: 'Server Error'
     });
@@ -104,7 +110,7 @@ const editApartmentById = async (req, res) => {
 module.exports = {
   showIndex,
   getAllApartments,
-  submitApartment,
+  addApartment,
   getApartmentById,
   deleteApartmentById,
   editApartmentById
