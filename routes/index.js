@@ -11,8 +11,17 @@ router.get('/', controllers.showIndex);
 /* GET the list of all apartments. */
 router.get('/apartments', controllers.getAllApartments);
 
-/* POST apartments. */
+/* GET apartment's details by ID. */
+router.get('/apartments/:id', controllers.getApartmentById);
+
+/* Add a new apartment. */
 router.post('/apartments', upload.none(), validator('submitApartment'), controllers.submitApartment);
+
+/* Edit apartment's parameters by ID. */
+router.put('/apartments/:id', upload.none(), validator('submitApartment'), controllers.editApartmentById);
+
+/* Delete apartment by ID. */
+router.delete('/apartments/:id', controllers.deleteApartmentById);
 
 
 module.exports = router;

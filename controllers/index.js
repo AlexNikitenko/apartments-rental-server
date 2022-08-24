@@ -12,7 +12,6 @@ const getAllApartments = async (req, res) => {
       price,
       rooms
     } = req.query;
-    // const apartmentsArr = await Apartments.find({});
     const apartmentsArr = [];
     if (!price && !rooms) {
       apartmentsArr.push(await Apartments.find({}));
@@ -32,7 +31,6 @@ const getAllApartments = async (req, res) => {
       data: apartmentsArr
     });
   } catch (err) {
-    console.log('errrors', err);
     res.status(500).json({
       message: 'Server Error'
     });
@@ -49,7 +47,54 @@ const submitApartment = async (req, res) => {
       data: apartment
     })
   } catch(err) {
-    console.log('Error>>>', err.message);
+    res.status(500).json({
+      message: 'Server Error'
+    });
+  }
+};
+
+//Get Appartment by ID
+const getApartmentById = async (req, res) => {
+  const {id} = req.params;
+  try {
+    const apartment = await Apartments.findById(id).exec();
+    res.status(200).json({
+      data: apartment
+    })
+  } catch(err) {
+    res.status(500).json({
+      message: 'Server Error'
+    });
+  }
+};
+
+//Delete Appartment by ID
+const deleteApartmentById = async (req, res) => {
+  const {id} = req.params;
+  try {
+    await Apartments.findByIdAndDelete(id);
+    res.status(200).json({
+      data: `The apartment with ID#${id} has been deleted`
+    })
+  } catch(err) {
+    res.status(500).json({
+      message: 'Server Error'
+    });
+  }
+};
+
+//Edit Appartment by ID
+const editApartmentById = async (req, res) => {
+  const {id} = req.params;
+  try {
+    const {rooms, name, price, description} = req.body;
+    console.log('updatedObj', rooms, name, price, description);
+    const updatedApartment = await Apartments.findByIdAndUpdate(id, { $set: { rooms, name, price, description } });
+    res.status(200).json({
+      data: updatedApartment
+    })
+  } catch(err) {
+    console.log(err);
     res.status(500).json({
       message: 'Server Error'
     });
@@ -59,5 +104,8 @@ const submitApartment = async (req, res) => {
 module.exports = {
   showIndex,
   getAllApartments,
-  submitApartment
+  submitApartment,
+  getApartmentById,
+  deleteApartmentById,
+  editApartmentById
 };
