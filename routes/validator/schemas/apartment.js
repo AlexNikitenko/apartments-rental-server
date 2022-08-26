@@ -3,7 +3,8 @@ module.exports = {
   properties: {
     rooms: {
       type: "number",
-      minimum: 0
+      minimum: 1,
+      maximum: 10
     },
     name: {
       type: "string",
@@ -13,7 +14,7 @@ module.exports = {
     },
     price: {
       type: "number",
-      minimum: 0
+      minimum: 1
     },
     description: {
       type: "string",

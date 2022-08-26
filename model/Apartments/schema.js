@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 module.exports = new Schema({
   rooms: {
     type: Number,
-    min: 0,
+    min: 1,
+    max: 10,
     required: true,
   },
   name: {
@@ -15,7 +16,7 @@ module.exports = new Schema({
   },
   price: {
     type: Number,
-    min: 0,
+    min: 1,
     required: true
   },
   description: {
