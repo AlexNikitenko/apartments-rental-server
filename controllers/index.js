@@ -10,7 +10,6 @@ const getAllApartments = async (req, res) => {
       price,
       rooms
     } = req.query;
-    const apartmentsArr = [];
     const apartments = Number.isInteger(+rooms) ?
       await Apartments.find({ rooms }) :
       await Apartments.find({});
