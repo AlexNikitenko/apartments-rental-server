@@ -7,7 +7,7 @@ module.exports = {
     },
     name: {
       type: "string",
-      pattern: "^[a-zA-Z0-9\\s,'-]*$",
+      pattern: "^(.|\s)*[a-zA-Z]+(.|\s)*$",
       minLength: 1,
       maxLength: 99
     },
@@ -17,7 +17,7 @@ module.exports = {
     },
     description: {
       type: "string",
-      pattern: "^[a-zA-Z0-9\\s,'-]*$",
+      pattern: "^(.|\s)*[a-zA-Z]+(.|\s)*$",
       minLength: 1,
       maxLength: 999
     }
@@ -26,9 +26,9 @@ module.exports = {
   errorMessage: {
     properties: {
       rooms: "Incorrect format of rooms count, use numbers only",
-      name: "Incorrect format of name, use latin letters, numbers and spaces only",
+      name: "Incorrect format of name, use alphabets, special characters, spaces, new line and presumably numbers only",
       price: "Incorrect format of price, use numbers only",
-      description: "Incorrect format of user address, use latin letters, numbers and spaces only"
+      description: "Incorrect format of description, use alphabets, special characters, spaces, new line and presumably numbers only"
     },
   }
 }
